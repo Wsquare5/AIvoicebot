@@ -1,0 +1,5 @@
+dashscope>=1.10.0
+pyaudio>=0.2.11
+websockets>=11.0.3
+numpy>=1.24.0
+python-dotenv>=0.19.0 
