@@ -20,7 +20,7 @@ class ASRCallback(RecognitionCallback):
         self.stream = None
         self.is_running = False
         self.last_speech_time = time.time()
-        self.silence_threshold = 3.5  # 增加到3.5秒
+        self.silence_threshold = 2.5  # 降低静默阈值到2.5秒
         self.current_text = ""
         self.last_length = 0
         self.final_text = ""
@@ -49,7 +49,7 @@ class ASRCallback(RecognitionCallback):
                 rate=16000,
                 input=True,
                 input_device_index=device_id,
-                frames_per_buffer=3200  # 调回较大的缓冲区
+                frames_per_buffer=1600  # 减小缓冲区大小，提高响应速度
             )
             print('音频流打开成功')
             self.is_running = True
@@ -63,19 +63,16 @@ class ASRCallback(RecognitionCallback):
         try:
             sentence = result.get_sentence()
             if sentence and 'text' in sentence:
-                # 更新最后一次语音时间
                 current_time = time.time()
                 self.last_speech_time = current_time
                 
-                # 获取新识别的文本
                 new_text = sentence["text"]
                 
-                # 更新文本，并确保有足够的处理时间
                 if new_text:
                     self.current_text = new_text
                     self.final_text = new_text
-                    # 只有在距离上次更新超过0.5秒时才打印
-                    if current_time - self.last_update_time > 0.5:
+                    # 减少更新间隔到0.2秒
+                    if current_time - self.last_update_time > 0.2:
                         print(f'\r当前识别: {new_text}', end='', flush=True)
                         self.last_update_time = current_time
 
@@ -142,10 +139,10 @@ def start_realtime_asr():
         while callback.is_running:
             if callback and callback.stream:
                 try:
-                    audio_data = callback.stream.read(3200, exception_on_overflow=False)
+                    audio_data = callback.stream.read(1600, exception_on_overflow=False)  # 减小读取的数据量
                     recognition.send_audio_frame(audio_data)
-                    callback.check_silence()  # 检查是否需要自动停止
-                    time.sleep(0.1)
+                    callback.check_silence()
+                    time.sleep(0.05)  # 减少循环延迟
                 except Exception as e:
                     print(f'读取音频数据时出错: {str(e)}')
                     break
