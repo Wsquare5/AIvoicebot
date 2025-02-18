@@ -1,6 +1,6 @@
-from test_realtime_asr import ASRCallback, Recognition
-from test_llm import LLMService
-from test_tts import text_to_speech
+from backend.test_realtime_asr import ASRCallback, Recognition
+from backend.test_llm import LLMService
+from backend.test_tts import text_to_speech
 import asyncio
 import dashscope
 from dotenv import load_dotenv
@@ -112,4 +112,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n程序异常: {str(e)}")
     finally:
-        sys.exit(0)
+        sys.exit(0) 
